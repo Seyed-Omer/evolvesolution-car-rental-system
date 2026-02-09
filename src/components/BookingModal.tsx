@@ -169,13 +169,13 @@ const BookingModal = ({ car, isOpen, onClose, onConfirm, initialPickupDate, init
 
   return (
     <div 
-      className="fixed inset-0 bg-foreground/60 backdrop-blur-sm flex items-center justify-center z-[2000] p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[2000] p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-card rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-8 relative shadow-xl animate-slide-up">
+      <div className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-8 relative shadow-2xl animate-slide-up">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          className="absolute top-4 right-4 w-10 h-10 bg-muted/80 backdrop-blur-sm rounded-full flex items-center justify-center text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-all duration-200"
         >
           <X size={20} />
         </button>
@@ -301,24 +301,24 @@ const BookingModal = ({ car, isOpen, onClose, onConfirm, initialPickupDate, init
           </div>
 
           {/* Price Summary */}
-          <div className="bg-muted p-6 rounded-xl border border-border mt-6">
+          <div className="bg-gradient-to-br from-muted to-muted/50 p-6 rounded-2xl border border-border/50 mt-6 backdrop-blur-sm">
             <div className="flex justify-between py-2 text-muted-foreground">
               <span>Daily Rate (INR):</span>
-              <span>{formatINR(car.offerPricePerDay)}</span>
+              <span className="font-medium">{formatINR(car.offerPricePerDay)}</span>
             </div>
             <div className="flex justify-between py-2 text-muted-foreground">
               <span>Number of Days:</span>
-              <span>{calculateDays()}</span>
+              <span className="font-medium">{calculateDays()}</span>
             </div>
-            <div className="flex justify-between pt-4 border-t-2 border-border mt-2 font-bold text-lg text-foreground">
+            <div className="flex justify-between pt-4 border-t-2 border-primary/20 mt-2 font-bold text-lg text-foreground">
               <span>Total Price (INR):</span>
-              <span className="text-primary-dark">{formatINR(calculateTotal())}</span>
+              <span className="text-primary">{formatINR(calculateTotal())}</span>
             </div>
           </div>
 
           <Button 
             type="submit" 
-            className="w-full bg-primary hover:bg-primary-dark text-primary-foreground py-3 font-semibold"
+            className="w-full bg-primary hover:bg-primary-dark text-primary-foreground py-6 font-semibold text-base rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             Confirm Booking
           </Button>

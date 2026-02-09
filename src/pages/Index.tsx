@@ -12,8 +12,11 @@ import BookingModal, { BookingData } from '@/components/BookingModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import Chatbot from '@/components/Chatbot';
 import { Car } from '@/data/cars';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const Index = () => {
+  const { user } = useAuth();
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -33,8 +36,37 @@ const Index = () => {
     setIsBookingModalOpen(true);
   };
 
-  const handleConfirmBooking = (booking: BookingData) => {
-    // Save to localStorage
+  const handleConfirmBooking = async (booking: BookingData) => {
+    // Save to database
+    try {
+      const bookingData = {
+        booking_id: booking.id,
+        user_id: user?.id ?? null,
+        car_id: String(booking.car.id),
+        car_name: booking.car.name,
+        car_image: booking.car.image,
+        customer_name: booking.customer.name,
+        customer_email: booking.customer.email,
+        customer_phone: booking.customer.phone,
+        license_number: booking.customer.license,
+        pickup_date: booking.rental.pickupDate,
+        dropoff_date: booking.rental.dropoffDate,
+        pickup_location: booking.rental.pickupLocation,
+        rental_days: booking.rental.days,
+        price_per_day: booking.car.offerPricePerDay,
+        total_price: booking.rental.totalPrice,
+        status: 'confirmed'
+      };
+      
+      const { error } = await supabase.from('bookings').insert(bookingData);
+      if (error) {
+        console.error('Failed to save booking to database:', error);
+      }
+    } catch (error) {
+      console.error('Failed to save booking to database:', error);
+    }
+
+    // Also save to localStorage as backup
     const bookings = JSON.parse(localStorage.getItem('driveease_bookings') || '[]');
     bookings.push(booking);
     localStorage.setItem('driveease_bookings', JSON.stringify(bookings));

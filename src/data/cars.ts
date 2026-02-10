@@ -47,7 +47,7 @@ export const cars: Car[] = [
     fuel: "Petrol",
     transmission: "Auto",
     image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400",
-    category: "Luxury"
+    category: "Premium"
   },
   {
     id: 3,
@@ -58,7 +58,7 @@ export const cars: Car[] = [
     fuel: "Diesel",
     transmission: "Auto",
     image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400",
-    category: "Luxury"
+    category: "Premium"
   },
   {
     id: 4,
@@ -102,7 +102,7 @@ export const cars: Car[] = [
     fuel: "Petrol",
     transmission: "Auto",
     image: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400",
-    category: "Luxury"
+    category: "Premium"
   },
   {
     id: 8,

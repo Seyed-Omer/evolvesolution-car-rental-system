@@ -289,7 +289,7 @@ const BookingModal = ({ car, isOpen, onClose, onConfirm, initialPickupDate, init
               <SelectTrigger className={errors.pickupLocation ? 'border-destructive' : ''}>
                 <SelectValue placeholder="Select Location" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[2100] bg-card border border-border shadow-xl">
                 {locations.map((loc) => (
                   <SelectItem key={loc.value} value={loc.value}>
                     {loc.label}

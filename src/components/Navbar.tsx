@@ -69,9 +69,8 @@ const Navbar = () => {
         <a 
           href="#home" 
           onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}
-          className="flex items-center gap-2 text-2xl font-bold"
+          className="text-2xl font-bold"
         >
-          <Car className={`w-7 h-7 ${isScrolled ? 'text-primary' : 'text-white'}`} />
           <span className={isScrolled ? 'text-foreground' : 'text-white'}>EVOLVE CARS</span>
         </a>
 

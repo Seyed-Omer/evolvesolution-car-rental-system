@@ -26,6 +26,7 @@ const loginSchema = z.object({
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ const Auth = () => {
     confirmPassword: ''
   });
 
-  const { signUp, signIn, user } = useAuth();
+  const { signUp, signIn, resetPassword, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -56,6 +57,22 @@ const Auth = () => {
     // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setErrors({ email: 'Please enter a valid email address' });
+      return;
+    }
+    setLoading(true);
+    const { error } = await resetPassword(formData.email);
+    setLoading(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Email Sent", description: "Check your email for a password reset link." });
+      setIsForgotPassword(false);
     }
   };
 
@@ -195,16 +212,48 @@ const Auth = () => {
           {/* Form Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+              {isForgotPassword ? 'Reset Password' : isLogin ? 'Welcome Back' : 'Create Account'}
             </h1>
             <p className="text-muted-foreground">
-              {isLogin 
-                ? 'Sign in to access your bookings and preferences' 
-                : 'Register to start booking premium cars'}
+              {isForgotPassword
+                ? 'Enter your email and we\'ll send you a reset link'
+                : isLogin 
+                  ? 'Sign in to access your bookings and preferences' 
+                  : 'Register to start booking premium cars'}
             </p>
           </div>
 
-          {/* Form */}
+          {isForgotPassword ? (
+            <div className="space-y-5">
+              <div>
+                <Label htmlFor="email">Email Address *</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={`mt-1.5 rounded-xl ${errors.email ? 'border-destructive' : ''}`}
+                />
+                {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
+              </div>
+              <Button 
+                onClick={handleForgotPassword}
+                className="w-full py-6 rounded-xl font-semibold text-base"
+                disabled={loading}
+              >
+                {loading ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Sending...</>
+                ) : 'Send Reset Link'}
+              </Button>
+              <div className="text-center">
+                <button type="button" onClick={() => { setIsForgotPassword(false); setErrors({}); }} className="text-primary font-semibold hover:underline">
+                  Back to Sign In
+                </button>
+              </div>
+            </div>
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
@@ -279,6 +328,15 @@ const Auth = () => {
               {errors.password && (
                 <p className="text-sm text-destructive mt-1">{errors.password}</p>
               )}
+              {isLogin && (
+                <button
+                  type="button"
+                  onClick={() => { setIsForgotPassword(true); setErrors({}); }}
+                  className="text-sm text-primary hover:underline mt-1.5 block"
+                >
+                  Forgot password?
+                </button>
+              )}
             </div>
 
             {!isLogin && (
@@ -323,8 +381,10 @@ const Auth = () => {
               )}
             </Button>
           </form>
+          )}
 
           {/* Toggle Form */}
+          {!isForgotPassword && (
           <div className="mt-6 text-center">
             <p className="text-muted-foreground">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
@@ -347,6 +407,7 @@ const Auth = () => {
               </button>
             </p>
           </div>
+          )}
         </div>
       </div>
 

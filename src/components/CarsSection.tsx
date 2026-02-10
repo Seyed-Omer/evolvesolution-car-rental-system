@@ -1,11 +1,28 @@
+import { useState, useMemo } from 'react';
 import { cars, formatINR, Car } from '@/data/cars';
 import { Button } from '@/components/ui/button';
+import { ArrowUpDown } from 'lucide-react';
 
 interface CarsSectionProps {
   onBookCar: (car: Car) => void;
 }
 
 const CarsSection = ({ onBookCar }: CarsSectionProps) => {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(cars.map(c => c.category)));
+    return ['All', ...cats];
+  }, []);
+
+  const filteredCars = useMemo(() => {
+    let result = activeCategory === 'All' ? cars : cars.filter(c => c.category === activeCategory);
+    if (sortOrder === 'asc') result = [...result].sort((a, b) => a.offerPricePerDay - b.offerPricePerDay);
+    if (sortOrder === 'desc') result = [...result].sort((a, b) => b.offerPricePerDay - a.offerPricePerDay);
+    return result;
+  }, [activeCategory, sortOrder]);
+
   return (
     <section id="cars" className="py-16 bg-gradient-to-b from-muted to-background">
       <div className="container mx-auto">
@@ -18,8 +35,34 @@ const CarsSection = ({ onBookCar }: CarsSectionProps) => {
           </p>
         </div>
 
+        {/* Filters */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <div className="flex flex-wrap gap-2">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  activeCategory === cat
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc')}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <ArrowUpDown size={16} />
+            {sortOrder === 'asc' ? 'Price: Low → High' : sortOrder === 'desc' ? 'Price: High → Low' : 'Sort by Price'}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
-          {cars.map((car, index) => {
+          {filteredCars.map((car, index) => {
             const discountPercent = Math.round((1 - car.offerPricePerDay / car.originalPricePerDay) * 100);
             
             return (
@@ -28,7 +71,6 @@ const CarsSection = ({ onBookCar }: CarsSectionProps) => {
                 className="bg-card rounded-2xl overflow-hidden shadow-card hover:-translate-y-1.5 hover:shadow-card-hover transition-all duration-300 animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img 
                     src={car.image} 
@@ -46,7 +88,6 @@ const CarsSection = ({ onBookCar }: CarsSectionProps) => {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="p-5">
                   <h3 className="text-lg font-semibold text-foreground mb-2 tracking-tight">
                     {car.name}
@@ -82,6 +123,10 @@ const CarsSection = ({ onBookCar }: CarsSectionProps) => {
             );
           })}
         </div>
+
+        {filteredCars.length === 0 && (
+          <p className="text-center text-muted-foreground py-12">No cars found in this category.</p>
+        )}
       </div>
     </section>
   );
